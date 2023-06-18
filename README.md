@@ -11,5 +11,5 @@ In final_conv.py you can find whole code for model 1.
 In final_autoencoder.py that for the classifier with autoencoder 
 
 # Authors 
-Arianna Fassino \\
+Arianna Fassino e
 Francesco Devecchi 
