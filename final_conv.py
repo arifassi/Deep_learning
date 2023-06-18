@@ -139,8 +139,8 @@ for k in range(1,10):
         #model.add(Dense(n_classes, activation='sigmoid'))
         model.add(Dense(n_classes, activation='softmax'))
         learning_rate = hp.Float("learning_rate", min_value=1e-3, max_value=1, sampling="log")
-        model.compile(optimizer=SGD(learning_rate = learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
-        #model.compile(optimizer=SGD(learning_rate = learning_rate), loss='categorical_crossentropy', metrics=['accuracy'])
+        #model.compile(optimizer=SGD(learning_rate = learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
+        model.compile(optimizer=SGD(learning_rate = learning_rate), loss='categorical_crossentropy', metrics=['accuracy'])
         return model
 
     build_model(keras_tuner.HyperParameters())
