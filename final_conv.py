@@ -26,14 +26,12 @@ from tensorflow.keras.utils import to_categorical
 #import generic model class
 from tensorflow.keras import Model, Input
 
-# Faccio il Grid Search del'iperparametro da stimare: il learning rate 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten , Input , Reshape , Dropout
 #import the types of layes we need
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten , Input , Reshape , Dropout
 
-from tensorflow.keras.optimizers import Adam, SGD
+#grid search
+from tensorflow.keras.optimizers import  SGD
 import keras_tuner
 
 
@@ -69,8 +67,6 @@ plt.imshow(X_train[0], cmap='gray')
 plt.title('NUMBER {}'.format(y_train[0]), fontsize=15)
 plt.axis('off'); 
 #do not show spines
-
-
 
 
 # In[8]:
