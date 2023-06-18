@@ -10,16 +10,13 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 
-
 #function for fast generation of training and test set from data
 from sklearn.model_selection import train_test_split
-
 
 # Convert labels to one-hot encoded vectors
 
 #transform integer label into one-hot encodings
 from tensorflow.keras.utils import to_categorical
-
 
 #a few more imports for readability
 
@@ -51,13 +48,11 @@ from tensorflow.keras.datasets import mnist
 
 # In[5]:
 
-
 #check shape of the training set
 print('TRAINING SET:\t',X_train.shape)
 
 #check shape of the test set
 print('TEST SET:\t',    X_test.shape)
-
 
 # In[6]:
 
@@ -71,15 +66,12 @@ plt.axis('off');
 
 # In[8]:
 
-
 # show the first 10 images in the training set
 
 fig, axs = plt.subplots(2,5,figsize=(12,4))
 
 for i in range(10):
-    
     ax = axs.ravel()[i]
-    
     ax.imshow(X_train[i], cmap='gray')
     ax.set_title('NUMBER {}'.format(y_train[i]), fontsize=13)
     ax.axis('off')
@@ -87,12 +79,12 @@ for i in range(10):
 # In[9]:
 
 plt.hlines(6000, -1, 10, linestyles='--')
-
 plt.hist(y_train, bins=np.linspace(-.5,9.5,11), rwidth=.8)
 plt.xticks(range(10))
 
 
 # In[10]:
+#Central phase of the code 
 # splitting labeled and unlabeled data
 # ratio of labeled data to total dataset
 n_classes=10
@@ -108,8 +100,8 @@ for k in range(1,10):
 
     val_size = .1 #use 10% of the labeled samples as validation set
 
-#generate training and test set with stratification
-#this means that we will find the same proportion of classes bot in the validation and in the training set
+    #generate training and test set with stratification
+    #this means that we will find the same proportion of classes bot in the validation and in the training set
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size, stratify=y_train)
 
 
@@ -144,34 +136,28 @@ for k in range(1,10):
     #tuner= keras_tuner.GridSearch(build_model, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), directory=f"cnn{ratio}")
     tuner.search(X_train, y_train_cat, epochs=5, validation_data=(X_val, y_val_cat))
 
-# Get the top 2 hyperparameters.
+    # Get the top 2 hyperparameters.
     best_hps = tuner.get_best_hyperparameters(5)
 
-# Build the model with the best hp.
+    # Build the model with the best hp.
     model = build_model(best_hps[0])
-# Fit with the entire dataset.
+    # Fit with the entire dataset.
     x_all = np.concatenate((X_train, X_val))
     y_all = np.concatenate((y_train_cat, y_val_cat))
     model.fit(x=x_all, y=y_all, epochs=5)
 
-
-# Evaluate the model on the test set
+    # Evaluate the model on the test set
 
     #test_loss[k], test_acc[k] = model.evaluate(X_test, y_test_cat)
     test_loss, test_acc = model.evaluate(X_test, y_test_cat)
     loss=np.append(loss,test_loss)
     acc=np.append(acc,test_acc)
     rations=np.append(rations, k/division)
-    #print()
-    #print('Test\t',k, ' Loss:\t', test_loss[k])
-    #print('Test\t',k, 'Accuracy:\t', test_acc[k])
     print(acc)
     print(rations)
     print()
     print('Test\t',k, ' Loss:\t', test_loss)
     print('Test\t',k, 'Accuracy:\t', test_acc)
-
-
 
     # confusion matrix
 
@@ -179,35 +165,30 @@ for k in range(1,10):
     pred= np.argmax(predictions, axis=1)
     print(pred)
     print(y_test)
-    #cm = confusion_matrix(y_test, pred, labels= ["0","1","2","3","4","5", "6", "7","8", "9"])
     cm = confusion_matrix(y_test, pred)
-    #disp = ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=["0","1","2","3","4","5", "6", "7","8", "9"])
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()
-    #plt.title(f"Confusion Matrix - CNN classic, ratio ={ratio}")
-    #plt.savefig(f"Confusion Matrix - CNN classic, ratio ={ratio}.png", bbox_inches="tight",
-     #       pad_inches=0.3, transparent=False)
-    plt.title(f"Confusion Matrix - Binary CNN classic, ratio ={ratio}")
-    plt.savefig(f"Confusion Matrix - Binary CNN classic, ratio ={ratio}.png", bbox_inches="tight",
-            pad_inches=0.3, transparent=False)
+    plt.title(f"Confusion Matrix - CNN classic, ratio ={ratio}")
+    plt.savefig(f"Confusion Matrix - CNN classic, ratio ={ratio}.png", bbox_inches="tight",
+             pad_inches=0.3, transparent=False)
+    #plt.title(f"Confusion Matrix - Binary CNN classic, ratio ={ratio}")
+    #plt.savefig(f"Confusion Matrix - Binary CNN classic, ratio ={ratio}.png", bbox_inches="tight",
+            #pad_inches=0.3, transparent=False)
     plt.show()
   
-
-
 
 #In[]
 print(acc)
 print(rations)
 plt.figure 
 plt.scatter(rations, acc) 
-#plt.scatter(rations, loss)
 plt.xlabel('Ratio')
 plt.ylabel('Accuracy')
 plt.title('Convolutional NN trained normally')
-#plt.savefig(f"CNN-classic accuracy.png", bbox_inches="tight",
- #           pad_inches=0.3, transparent=False)
-plt.savefig(f"Binary CNN-classic accuracy.png", bbox_inches="tight",
+plt.savefig(f"CNN-classic accuracy.png", bbox_inches="tight",
             pad_inches=0.3, transparent=False)
+#plt.savefig(f"Binary CNN-classic accuracy.png", bbox_inches="tight",
+            #pad_inches=0.3, transparent=False)
 plt.show()
 
 
