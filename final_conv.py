@@ -1,6 +1,5 @@
 
-# In[3]:
-
+# In[]:
 
 #standard imports
 import numpy as np
@@ -37,7 +36,7 @@ from sklearn.datasets import make_classification
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 
-# In[4]:
+# In[]:
 
 # **Loading mnist**
 from tensorflow.keras.datasets import mnist
@@ -46,7 +45,7 @@ from tensorflow.keras.datasets import mnist
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
 
-# In[5]:
+# In[]:
 
 #check shape of the training set
 print('TRAINING SET:\t',X_train.shape)
@@ -54,7 +53,7 @@ print('TRAINING SET:\t',X_train.shape)
 #check shape of the test set
 print('TEST SET:\t',    X_test.shape)
 
-# In[6]:
+# In[]:
 
 #show first image contained in the training data, with its label
 
@@ -64,7 +63,7 @@ plt.axis('off');
 #do not show spines
 
 
-# In[8]:
+# In[]:
 
 # show the first 10 images in the training set
 
@@ -76,14 +75,14 @@ for i in range(10):
     ax.set_title('NUMBER {}'.format(y_train[i]), fontsize=13)
     ax.axis('off')
 
-# In[9]:
+# In[]:
 
 plt.hlines(6000, -1, 10, linestyles='--')
 plt.hist(y_train, bins=np.linspace(-.5,9.5,11), rwidth=.8)
 plt.xticks(range(10))
 
 
-# In[10]:
+# In[]:
 #Central phase of the code 
 # splitting labeled and unlabeled data
 # ratio of labeled data to total dataset
