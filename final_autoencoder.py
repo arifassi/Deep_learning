@@ -17,7 +17,7 @@ import keras_tuner
 
 #In[]
 encoders= []
-
+keras.backend.clear_session()
 
 #In[]
 from tensorflow.keras.utils import to_categorical
@@ -45,9 +45,6 @@ for k in range(1,10):
     X_trainun = X_trainun/255
     X_valun = X_valun/255
     X_test = X_test/255
-#X_trainun = np.reshape(X_trainun, (len(X_trainun), 28,28,1))
-#X_valun = np.reshape(X_valun, (len(X_valun), 28,28,1))
-#X_test = np.reshape(X_test, (len(X_test), 28,28,1))
 
     # Define model architecture
     def build_model(hp):
@@ -77,8 +74,8 @@ for k in range(1,10):
         return autoencoder
 
     build_model(keras_tuner.HyperParameters())
-    #tuner_autoencoder= keras_tuner.GridSearch(build_model, max_trials = 10,executions_per_trial=2, objective=keras_tuner.Objective('val_loss', 'min'), overwrite=True)
-    tuner_autoencoder= keras_tuner.GridSearch(build_model, max_trials = 10,executions_per_trial=2, objective=keras_tuner.Objective('val_loss', 'min'), directory=f"autoencoder{ratio}")
+    tuner_autoencoder= keras_tuner.GridSearch(build_model, max_trials = 10,executions_per_trial=2, objective=keras_tuner.Objective('val_loss', 'min'), overwrite=True)
+    #tuner_autoencoder= keras_tuner.GridSearch(build_model, max_trials = 10,executions_per_trial=2, objective=keras_tuner.Objective('val_loss', 'min'), directory=f"autoencoder{ratio}")
     tuner_autoencoder.search(X_trainun, X_trainun, epochs=5, validation_data=(X_valun, X_valun))
 
 # Get the top 2 hyperparameters.
@@ -147,17 +144,20 @@ for k in range(1,10):
 
         classifier.add(layers.Input(shape=(4,4,8)))
         classifier.add(layers.Flatten())
+        #classifier.add(layers.Dense(n_classes, activation='sigmoid'))
         classifier.add(layers.Dense(n_classes, activation='softmax'))
         learning_rate = hp.Float("learning_rate", min_value=1e-3, max_value=1, sampling="log")
         classifier.compile(optimizer=SGD(learning_rate = learning_rate), loss='categorical_crossentropy', metrics=['accuracy'])
+        #classifier.compile(optimizer=SGD(learning_rate = learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
         return classifier 
     
 
 
     build_classifier(keras_tuner.HyperParameters())
-    #tuner= keras_tuner.GridSearch(build_classifier, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), overwrite=True)
-    tuner= keras_tuner.GridSearch(build_classifier, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'))
-    tuner.search(encoded_train, y_train_cat, epochs=5, validation_data=(encoded_val, y_val_cat))
+    tuner= keras_tuner.GridSearch(build_classifier, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), overwrite=True)
+    #tuner= keras_tuner.GridSearch(build_classifier, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), directory= f"binari-classifier{ratio}")
+    tuner= keras_tuner.GridSearch(build_classifier, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), directory= f"classifier{ratio}")
+    #tuner.search(encoded_train, y_train_cat, epochs=5, validation_data=(encoded_val, y_val_cat))
 
 # Get the top 2 hyperparameters.
     best_hps = tuner.get_best_hyperparameters(5)
@@ -178,9 +178,6 @@ for k in range(1,10):
     loss=np.append(loss,test_loss)
     acc=np.append(acc,test_acc)
     rations=np.append(rations, k/division)
-    #print()
-    #print('Test\t',k, ' Loss:\t', test_loss[k])
-    #print('Test\t',k, 'Accuracy:\t', test_acc[k])
     print(acc)
     print(loss)
     print(rations)
@@ -194,17 +191,16 @@ for k in range(1,10):
     pred= np.argmax(predictions, axis=1)
     print(pred)
     print(y_test)
-    #cm = confusion_matrix(y_test, pred, labels= ["0","1","2","3","4","5", "6", "7","8", "9"])
     cm = confusion_matrix(y_test, pred)
-    #disp = ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=["0","1","2","3","4","5", "6", "7","8", "9"])
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-    #disp.ax_.set_title("Confusion Matrix - Classifier with Autoencoder, ratio =\t", ratio)
     disp.plot()
     plt.title(f"Confusion Matrix - Classifier with Autoencoder, ratio ={ratio}")
-    plt.show()
-    plt.savefig(f"Confusion Matrix - Classifier with Autoencoder, ratio ={ratio}", bbox_inches="tight",
+    plt.savefig(f"Confusion Matrix - Classifier with Autoencoder, ratio ={ratio}.png", bbox_inches="tight",
             pad_inches=0.3, transparent=False)
-
+    #plt.title(f"Confusion Matrix - Binary Classifier with Autoencoder, ratio ={ratio}")
+    #plt.savefig(f"Confusion Matrix - Binary Classifier with Autoencoder, ratio ={ratio}.png", bbox_inches="tight",
+     #       pad_inches=0.3, transparent=False)
+    plt.show()
 
 
 #In[]
@@ -216,30 +212,10 @@ plt.ylabel('Accuracy')
 plt.title('Autoencoders ')
 plt.savefig(f"Classifier with autoencoder accuracy.png", bbox_inches="tight",
             pad_inches=0.3, transparent=False)
+#plt.savefig(f"Binary Classifier with autoencoder accuracy.png", bbox_inches="tight",
+#            pad_inches=0.3, transparent=False)
 plt.show()
 
 
 
 
-#In[]
-# Silouette 
-for k in range(1,10):
-    (X_train, y_train), (X_test, y_test),  = mnist.load_data()
-# splitting labeled and unlabeled data
-# ratio of labeled data to total dataset
-
-    ratio=k/division
-
-    X_trainun, X_train, y_trainun, y_train = train_test_split(X_train, y_train, test_size=ratio, stratify=y_train)
-# splitting the validation set
-
-    val_size = .1
-
-    X_trainun, X_valun, y_trainun, y_valun = train_test_split(X_trainun, y_trainun, test_size=val_size, stratify=y_trainun)
-
-
-    X_trainun = X_trainun/255
-    X_valun = X_valun/255
-    X_test = X_test/255
-
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size, stratify=y_train)
