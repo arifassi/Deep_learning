@@ -29,13 +29,13 @@ loss=[]
 rations=[]
 for k in range(1,10):
     (X_train, y_train), (X_test, y_test),  = mnist.load_data()
-# splitting labeled and unlabeled data
-# ratio of labeled data to total dataset
+    # splitting labeled and unlabeled data
+    # ratio of labeled data to total dataset
 
     ratio=k/division
 
     X_trainun, X_train, y_trainun, y_train = train_test_split(X_train, y_train, test_size=ratio, stratify=y_train)
-# splitting the validation set
+    # splitting the validation set
 
     val_size = .1
 
@@ -59,7 +59,7 @@ for k in range(1,10):
         autoencoder.add(layers.Conv2D(8, (3, 3), activation='relu', padding='same'))
         autoencoder.add(layers.MaxPooling2D((2, 2), padding='same', name='encoded'))
 
-    # at this point the representation is (4, 4, 8) i.e. 128-dimensional
+        # at this point the representation is (4, 4, 8) i.e. 128-dimensional
 
         autoencoder.add(layers.Conv2D(8, (3, 3), activation='relu', padding='same'))
         autoencoder.add(layers.UpSampling2D((2, 2)))
@@ -78,13 +78,13 @@ for k in range(1,10):
     #tuner_autoencoder= keras_tuner.GridSearch(build_model, max_trials = 10,executions_per_trial=2, objective=keras_tuner.Objective('val_loss', 'min'), directory=f"autoencoder{ratio}")
     tuner_autoencoder.search(X_trainun, X_trainun, epochs=5, validation_data=(X_valun, X_valun))
 
-# Get the top 2 hyperparameters.
+    # Get the top 2 hyperparameters.
     best_hps = tuner_autoencoder.get_best_hyperparameters(5)
 
-# Build the model with the best hp.
+    # Build the model with the best hp.
     autoencoder = build_model(best_hps[0])
 
-# Fit with the entire dataset.
+    # Fit with the entire dataset.
     x_all = np.concatenate((X_trainun, X_valun))
     y_all = np.concatenate((y_trainun, y_valun))
     autoencoder.fit(x=X_trainun,y=X_trainun, epochs=5)
@@ -113,13 +113,13 @@ loss=[]
 rations=[]  
 for k in range(1,10):
     (X_train, y_train), (X_test, y_test),  = mnist.load_data()
-# splitting labeled and unlabeled data
-# ratio of labeled data to total dataset
+    # splitting labeled and unlabeled data
+    # ratio of labeled data to total dataset
 
     ratio=k/division
 
     X_trainun, X_train, y_trainun, y_train = train_test_split(X_train, y_train, test_size=ratio, stratify=y_train)
-# splitting the validation set
+    # splitting the validation set
 
     val_size = .1
 
@@ -159,12 +159,12 @@ for k in range(1,10):
     tuner= keras_tuner.GridSearch(build_classifier, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), directory= f"classifier{ratio}")
     #tuner.search(encoded_train, y_train_cat, epochs=5, validation_data=(encoded_val, y_val_cat))
 
-# Get the top 2 hyperparameters.
+    # Get the top 2 hyperparameters.
     best_hps = tuner.get_best_hyperparameters(5)
 
-# Build the model with the best hp.
+    # Build the model with the best hp.
     classifier = build_classifier(best_hps[0])
-# Fit with the entire dataset.
+    # Fit with the entire dataset.
     encoded_all = np.concatenate((encoded_train, encoded_val))
     y_all = np.concatenate((y_train_cat, y_val_cat))
     classifier.fit(x= encoded_all, y=y_all, epochs=5)
@@ -185,7 +185,7 @@ for k in range(1,10):
     print('Test\t',k, ' Loss:\t', test_loss)
     print('Test\t',k, 'Accuracy:\t', test_acc)
 
-# confusion matrix
+    # confusion matrix
 
     predictions = classifier.predict(encoded_test)
     pred= np.argmax(predictions, axis=1)
