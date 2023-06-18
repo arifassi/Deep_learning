@@ -37,18 +37,7 @@ from tensorflow.keras.optimizers import Adam, SGD
 import keras_tuner
 
 
-#ROC
-from sklearn.datasets import make_classification
-from sklearn.preprocessing import label_binarize
-
-
-import numpy as np
-from scipy import interp
-import matplotlib.pyplot as plt
-from itertools import cycle
-from sklearn.metrics import roc_curve, auc
-
-import matplotlib.pyplot as plt
+#Confusion MATRIX
 from sklearn.datasets import make_classification
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
@@ -150,13 +139,13 @@ for k in range(1,10):
         #model.add(Dense(n_classes, activation='sigmoid'))
         model.add(Dense(n_classes, activation='softmax'))
         learning_rate = hp.Float("learning_rate", min_value=1e-3, max_value=1, sampling="log")
-        #model.compile(optimizer=SGD(learning_rate = learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
-        model.compile(optimizer=SGD(learning_rate = learning_rate), loss='categorical_crossentropy', metrics=['accuracy'])
+        model.compile(optimizer=SGD(learning_rate = learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
+        #model.compile(optimizer=SGD(learning_rate = learning_rate), loss='categorical_crossentropy', metrics=['accuracy'])
         return model
 
     build_model(keras_tuner.HyperParameters())
-    #tuner= keras_tuner.GridSearch(build_model, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), overwrite=True)
-    tuner= keras_tuner.GridSearch(build_model, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), directory=f"cnn{ratio}")
+    tuner= keras_tuner.GridSearch(build_model, max_trials = 10,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), directory=f"binari-cnn{ratio}")
+    #tuner= keras_tuner.GridSearch(build_model, max_trials = 20,executions_per_trial=3, objective=keras_tuner.Objective('val_accuracy', 'max'), directory=f"cnn{ratio}")
     tuner.search(X_train, y_train_cat, epochs=5, validation_data=(X_val, y_val_cat))
 
 # Get the top 2 hyperparameters.
@@ -199,12 +188,14 @@ for k in range(1,10):
     #disp = ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=["0","1","2","3","4","5", "6", "7","8", "9"])
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()
-    plt.title(f"Confusion Matrix - CNN classic, ratio ={ratio}")
-    plt.savefig(f"Confusion Matrix - CNN classic, ratio ={ratio}.png", bbox_inches="tight",
-            pad_inches=0.3, transparent=False)
-    plt.show()
+    #plt.title(f"Confusion Matrix - CNN classic, ratio ={ratio}")
     #plt.savefig(f"Confusion Matrix - CNN classic, ratio ={ratio}.png", bbox_inches="tight",
      #       pad_inches=0.3, transparent=False)
+    plt.title(f"Confusion Matrix - Binary CNN classic, ratio ={ratio}")
+    plt.savefig(f"Confusion Matrix - Binary CNN classic, ratio ={ratio}.png", bbox_inches="tight",
+            pad_inches=0.3, transparent=False)
+    plt.show()
+  
 
 
 
@@ -217,9 +208,11 @@ plt.scatter(rations, acc)
 plt.xlabel('Ratio')
 plt.ylabel('Accuracy')
 plt.title('Convolutional NN trained normally')
-plt.savefig(f"CNN-classic accuracy.png", bbox_inches="tight",
+#plt.savefig(f"CNN-classic accuracy.png", bbox_inches="tight",
+ #           pad_inches=0.3, transparent=False)
+plt.savefig(f"Binary CNN-classic accuracy.png", bbox_inches="tight",
             pad_inches=0.3, transparent=False)
 plt.show()
 
 
-# %%
+
