@@ -7,8 +7,7 @@ The project focuses on the comparative study between two different methods of de
 
 # Code 
 
-In final_conv.py you can find whole code for model 1. 
-In final_autoencoder.py that for the classifier with autoencoder 
+This project has two version: the second it is focused on decresing the ratio, in order to show the drop in the accuracy of the CNN trained normally and the difference by introducing it in the autoencoder classifier. 
 
 # Authors 
 Arianna Fassino e
